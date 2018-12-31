@@ -1,0 +1,6 @@
+#!/bin/sh
+
+sleep 60 #wait for db initialization
+php artisan koel:init --no-interaction
+nohup koel-media-watcher.sh &
+docker-php-entrypoint $@

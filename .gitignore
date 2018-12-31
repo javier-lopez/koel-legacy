@@ -76,3 +76,5 @@ Temporary Items
 /log
 coverage.xml
 .phpunit.result.cache
+app-data
+mysql-data

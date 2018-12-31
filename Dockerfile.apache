@@ -1,0 +1,79 @@
+FROM php:7.2.0-apache-stretch
+
+ARG COMPOSER_VERSION=1.1.2
+ARG NODE_VERSION=node_8.x
+ARG RUNTIME_DEPS="libxml2-dev zlib1g-dev libcurl4-openssl-dev faad ffmpeg inotify-tools"
+ARG PHP_RUNTIME_DEPS="mbstring curl xml zip pdo pdo_mysql exif"
+
+RUN a2enmod rewrite
+
+#use apt to its full extension
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends gnupg2 apt-transport-https && \
+    apt-get clean
+
+#add node ppa
+RUN curl --silent https://deb.nodesource.com/gpgkey/nodesource.gpg.key \
+    | apt-key add - && \
+  echo "deb https://deb.nodesource.com/${NODE_VERSION} stretch main" \
+    | tee /etc/apt/sources.list.d/nodesource.list && \
+  echo "deb-src https://deb.nodesource.com/${NODE_VERSION} stretch main" \
+    | tee --append /etc/apt/sources.list.d/nodesource.list
+
+#add yarn ppa
+RUN curl --silent --show-error https://dl.yarnpkg.com/debian/pubkey.gpg \
+    | apt-key add - && \
+  echo "deb https://dl.yarnpkg.com/debian/ stable main" \
+    | tee /etc/apt/sources.list.d/yarn.list
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    nodejs \
+    yarn   \
+    git    \
+    ${RUNTIME_DEPS} && apt-get clean
+
+RUN docker-php-ext-install ${PHP_RUNTIME_DEPS}
+
+#add composer
+RUN curl -sS https://getcomposer.org/installer | \
+    php -- --install-dir=/usr/bin                \
+           --filename=composer                   \
+           --version=${COMPOSER_VERSION} &&      \
+    chmod +x /usr/bin/composer &&                \
+    composer --version
+
+#composer parallel install plugin
+RUN composer global require hirak/prestissimo
+
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
+#COPY . /usr/src/app
+
+#fix permissions
+RUN  chown -R www-data:www-data /usr/src/app /var/www
+USER www-data
+
+COPY --chown=www-data:www-data composer.json composer.lock /usr/src/app/
+COPY --chown=www-data:www-data database /usr/src/app/database
+COPY --chown=www-data:www-data tests /usr/src/app/tests
+RUN  composer install --prefer-dist --no-interaction
+
+COPY --chown=www-data:www-data . /usr/src/app
+#COPY --chown=www-data:www-data package.json yarn.lock /usr/src/app/
+RUN yarn install
+
+RUN rm -rf /var/www/html; ln -s /usr/src/app /var/www/html
+
+#koel makes use of Larvel's pretty URLs. This requires some additional
+#configuration: https://laravel.com/docs/4.2#pretty-urls
+COPY --chown=www-data:www-data ./.htaccess /var/www/html
+
+EXPOSE 80
+
+COPY extra/docker/koel-media-watcher.sh /usr/bin
+COPY koel-entrypoint /usr/bin
+USER root
+ENTRYPOINT ["koel-entrypoint"]
+CMD ["apache2-foreground"]
+
+#  vim: set ts=8 sw=4 tw=0 ft=dockerfile :

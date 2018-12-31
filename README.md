@@ -6,7 +6,25 @@
 
 **Koel** (also stylized as **koel**, with a lowercase k) is a simple web-based personal audio streaming service written in [Vue](http://vuejs.org/) on the client side and [Laravel](http://laravel.com/) on the server side. Targeting web developers, Koel embraces some of the more modern web technologies – flexbox, audio, and drag-and-drop API to name a few – to do its job.
 
-## Install and Upgrade Guide
+# Quick Start
+
+To download this repository use:
+
+    $ git clone --recursive https://github.com/javier-lopez/koel
+
+If you already downloaded the repository without the submodules, use the
+following to correct:
+
+    $ git submodule update --init --recursive
+
+Create and edit a `.env` file with custom settings (See .env.example), and run
+the `./setup.sh` script:
+
+    $ ./setup.sh [docker-compose-file] #require docker + docker-compose
+
+Access http://localhost
+
+## Other Install and Upgrade Guides
 
 For system requirements, installation/upgrade guides, troubleshooting etc., head over to the [Official Documentation](http://koel.phanan.net/docs).
 
