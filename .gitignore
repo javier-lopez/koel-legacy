@@ -3,6 +3,10 @@ node_modules
 Homestead.yaml
 Homestead.json
 .env
+.vault*
+.vagrant
+mitogen-*
+*.retry
 .idea
 /_ide_helper.php
 /config.testing

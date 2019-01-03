@@ -1,0 +1,9 @@
+[inventory:children]
+docker
+app
+
+[docker:children]
+app
+
+[app]
+espotifai.com ansible_user=root ansible_ssh_common_args='-o ProxyCommand="nc -x 127.0.0.1:9150 %h %p"'

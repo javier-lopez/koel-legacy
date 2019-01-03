@@ -1,0 +1,105 @@
+- name: create compose config folder
+  file: path={{docker_compose_path}}/app mode=0755 state=directory owner=docker group=docker
+
+- name: upload files
+  copy: src={{item}} dest="{{docker_containers_volume_path}}/app/" mode=preserve
+  with_fileglob:
+    - files/*
+    - files/.env
+    - files/.htaccess
+    - files/.dockerignore
+
+- name: verify if rsync is installed
+  stat: path=/usr/bin/rsync
+  register: rsync_installed
+
+- name: install rsync
+  include_tasks: install-rsync.{{distro}}.yml
+  when: not rsync_installed.stat.exists
+
+- name: upload directories
+  synchronize: src={{item}} dest="{{docker_containers_volume_path}}/app"  \
+               delete=yes recursive=yes copy_links=yes
+  with_items:
+    - api-docs
+    - app
+    - bin
+    - bootstrap
+    - certs
+    - config
+    - database
+    - extra
+    - nginx
+    - public
+    - resources
+    - routes
+    - storage
+    - tests
+
+- name: create service docker volume directories
+  file: path={{docker_containers_volume_path}}/app/ state=directory
+  with_items:
+    - app/mysql-data
+
+- name: install TLS certificates
+  copy: content="{{item.src}}" dest="{{docker_containers_volume_path}}/app/certs/{{item.dst}}"
+  with_items:
+    - { src: '{{vault_fullchain}}', dst: 'fullchain.pem' }
+    - { src: '{{vault_privkey}}',   dst: 'privkey.pem' }
+
+- name: update youtube-dl to latest version
+  command: "{{docker_containers_volume_path}}/app/bin/youtube-dl --update"
+  ignore_errors: true
+  register: youtube_dl_update
+
+- debug: var=youtube_dl_update
+
+- name: auto update youtube-dl daily
+  cron:
+    name:   "auto update youtube-dl daily"
+    hour:   "01"
+    minute: "00"
+    job:    "{{docker_containers_volume_path}}/app/bin/youtube-dl --update"
+
+#- name: verify if zip is installed
+  #stat: path=/usr/bin/zip
+  #register: zip_installed
+
+#- name: install zip
+  #include_tasks: install-zip.{{distro}}.yml
+  #when: not zip_installed.stat.exists
+
+- name: backup mysql app every 6hrs
+  cron:
+    name:   "backup mysql app every 6hrs"
+    hour:   "*/6"
+    minute: "00"
+    job:    "{{docker_containers_volume_path}}/app/extra/db-backup.sh"
+
+- name: rm app's volumes
+  #/tmp usually doesn't have enough space for docker-compose build step
+  shell: |
+    export TMPDIR=$HOME; echo "$TMPDIR"
+    cd {{docker_containers_volume_path}}/app && \
+    docker-compose -f {{app_compose}} down -v >/dev/null 2>&1 | tail
+  register: app_down
+
+- debug: var=app_down
+
+- name: build app stack
+  #/tmp usually doesn't have enough space for docker-compose build step
+  shell: |
+    export TMPDIR=$HOME; echo "$TMPDIR"
+    cd {{docker_containers_volume_path}}/app && \
+    docker-compose -f {{app_compose}} build >/dev/null 2>&1 | tail
+  register: app_built
+
+- debug: var=app_built
+
+- name: deploy app stack
+  shell: |
+    cd {{docker_containers_volume_path}}/app && \
+    docker-compose -f {{app_compose}} up -d
+  register: app_exec
+
+- debug: var=app_exec

@@ -1,0 +1,16 @@
+- name: verify if rsync is installed
+  stat: path=/usr/bin/rsync
+  register: rsync_installed
+
+- name: install rsync
+  include_tasks: install-rsync.{{distro}}.yml
+  when: not rsync_installed.stat.exists
+
+- name: download backup directories
+  synchronize: src={{item}} dest="/tmp/{{domain}}/" \
+               delete=yes recursive=yes copy_links=yes mode=pull
+  with_items:
+    - /backups
+
+- debug:
+    msg: "Dump was saved to /tmp/{{domain}}/backups*"

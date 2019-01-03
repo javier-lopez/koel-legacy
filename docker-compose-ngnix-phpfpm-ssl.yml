@@ -21,6 +21,7 @@ services:
     volumes:
       - app:/usr/src/app #share path with app
       - ./app-data/media:/media
+      - ./app-data/covers:/usr/src/app/public/img/covers
       - ./nginx/default-ssl/:/etc/nginx/conf.d
       - ./certs/:/certs/
       - /etc/localtime:/etc/localtime:ro
