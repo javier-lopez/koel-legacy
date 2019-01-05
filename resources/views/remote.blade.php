@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Koel - Remote Controller</title>
+    <title>{{config('app.name')}} - Remote Controller</title>
 
     <meta name="description" content="{{ config('app.tagline') }}">
     <meta charset="utf-8">
@@ -24,7 +24,7 @@
 <body>
     <div id="app"></div>
 
-    <noscript>It may sound funny, but Koel requires JavaScript to sing. Please enable it.</noscript>
+    <noscript>It may sound funny, but {{config('app.name')}} requires JavaScript to sing. Please enable it.</noscript>
     @include('client-js-vars')
     <script src="{{ App::rev('/js/remote/app.js') }}"></script>
 </body>

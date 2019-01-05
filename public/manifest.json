@@ -1,5 +1,5 @@
 {
-    "name": "Koel",
+    "name": "Espotifai",
     "start_url": "/",
     "display": "standalone",
     "orientation": "portrait",
@@ -9,6 +9,6 @@
       "type": "image/png"
     }],
     "background_color": "#181818",
-    "description": "Personal audio streaming service that works.",
+    "description": "The Sound of Music",
     "theme_color": "#181818"
 }
