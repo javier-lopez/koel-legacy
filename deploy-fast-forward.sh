@@ -12,6 +12,8 @@ if [ ! -f "${CURRENT_DIR}/.vault_pass.txt" ]; then
 fi
 
 cd "${CURRENT_DIR}"
+
+rsync -av resources/my-assets/ resources/assets/
 cd provision/ansible/
 
 #https://mitogen.readthedocs.io/en/latest/ansible.html

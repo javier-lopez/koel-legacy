@@ -9,6 +9,7 @@ COMPOSE_FILE="${CURRENT_DIR}/${COMPOSE_FILE}"
 cd "${CURRENT_DIR}"
 SECS="3"
 while :; do
+    rsync -av resources/my-assets/ resources/assets/
     docker-compose -f "${COMPOSE_FILE}" down -v && \
     docker-compose -f "${COMPOSE_FILE}" build   && \
     docker-compose -f "${COMPOSE_FILE}" up
