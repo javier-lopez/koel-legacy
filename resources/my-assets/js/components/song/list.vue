@@ -9,10 +9,14 @@
     <table class="song-list-header" :class="sortable ? 'sortable' : 'unsortable'">
       <thead>
         <tr>
-          <th @click="sort('song.track')" class="track-number">#
-            <i class="fa fa-angle-down" v-show="sortKey === 'song.track' && order > 0"></i>
-            <i class="fa fa-angle-up" v-show="sortKey === 'song.track' && order < 0"></i>
-          </th>
+          <!--<th @click="sort('song.track')" class="track-number">#-->
+            <!--<i class="fa fa-angle-down" v-show="sortKey === 'song.track' && order > 0"></i>-->
+            <!--<i class="fa fa-angle-up" v-show="sortKey === 'song.track' && order < 0"></i>-->
+          <!--</th>-->
+          <!--<th class="track-number">#-->
+            <!--<i class="fa fa-angle-down" v-show="sortKey === 'song.track' && order > 0"></i>-->
+            <!--<i class="fa fa-angle-up" v-show="sortKey === 'song.track' && order < 0"></i>-->
+          <!--</th>-->
           <th @click="sort('song.title')" class="title">Title
             <i class="fa fa-angle-down" v-show="sortKey === 'song.title' && order > 0"></i>
             <i class="fa fa-angle-up" v-show="sortKey === 'song.title' && order < 0"></i>
@@ -437,6 +441,12 @@ export default {
     background: #1b1b1b;
     z-index: 1;
     width: 100%;
+    counter-reset: serial-number;
+  }
+
+  .song-list-header td:first-child:before {
+      counter-increment: serial-number;  /* Increment the serial number counter */
+      content: counter(serial-number);   /* Display the counter */
   }
 
   table {
