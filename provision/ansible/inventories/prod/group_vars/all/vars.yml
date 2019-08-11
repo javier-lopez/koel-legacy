@@ -11,7 +11,8 @@ skip_post_deployment: false
 # general #
 ###########
 env: prod
-domain: espotifai.com
+app_name: espotifai
+domain: "{{app_name}}.com"
 persistent_storage_path: /persistent_storage
 logs_path: "{{persistent_storage_path}}/logs"
 

@@ -103,3 +103,15 @@
   register: app_exec
 
 - debug: var=app_exec
+
+- name: create systemd configuration files
+  template: src={{item}} dest=/lib/systemd/system/{{app_name}}.service mode=0644
+  with_fileglob:
+    - files/extra/systemd/app.service.j2
+
+- name: systemctl enable app service
+  shell: |
+    systemctl enable {{app_name}}.service
+  register: app_enable
+
+- debug: var=app_enable

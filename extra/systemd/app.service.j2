@@ -1,0 +1,22 @@
+[Unit]
+Description={{app_name}} service with docker compose
+Requires=docker.service
+After=docker.service
+
+[Service]
+Restart=always
+
+WorkingDirectory={{docker_containers_volume_path}}/app/
+
+# Remove old containers, images and volumes
+ExecStartPre=/usr/bin/docker-compose -f {{app_compose}} down -v
+ExecStartPre=/usr/bin/docker-compose -f {{app_compose}} rm -fv
+
+# Compose up
+ExecStart=/usr/bin/docker-compose -f {{app_compose}} up
+
+# Compose down, remove containers and volumes
+ExecStop=/usr/bin/docker-compose -f {{app_compose}} down -v
+
+[Install]
+WantedBy=multi-user.target
