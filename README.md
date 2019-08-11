@@ -30,6 +30,10 @@ Access http://localhost
     $ docker run --rm -it -p 127.0.0.1:9150:9150 peterdavehello/tor-socks-proxy
     $ ./deploy.sh prod #in another window
 
+    #production fast-forward (only updates app's code)
+    $ docker run --rm -it -p 127.0.0.1:9150:9150 peterdavehello/tor-socks-proxy
+    $ ./deploy-fast-forward.sh prod #in another window
+
 ## Other Install and Upgrade Guides
 
 For system requirements, installation/upgrade guides, troubleshooting etc., head over to the [Official Documentation](http://koel.phanan.net/docs).
