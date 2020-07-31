@@ -10,7 +10,7 @@
 
 To download this repository use:
 
-    $ git clone --recursive https://github.com/javier-lopez/koel
+    $ git clone --recursive https://github.com/javier-lopez/koel-legacy
 
 If you already downloaded the repository without the submodules, use the
 following to correct:
